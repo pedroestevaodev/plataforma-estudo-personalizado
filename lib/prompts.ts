@@ -10,7 +10,7 @@ const prompts = {
             1. Cada módulo deve conter:
             - **Título**: Um título que resuma o foco do módulo.
             - **Descrição**: Uma breve descrição do conteúdo que será abordado, rica em detalhes e informações.
-            2. Limite o plano a **no máximo 4 módulos**.
+            2. Limite o plano a **no máximo 8 módulos**.
 
             Formato de retorno:
 

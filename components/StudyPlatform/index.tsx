@@ -85,14 +85,13 @@ const StudyPlatform = () => {
                 const prompt = prompts.generateModules(studyMaterial);
                 const response = await interactionGemini(prompt, personality);
                 const responseText = response.text();
+                console.log(responseText);
 
                 if (validateJSON(responseText)) {
                     addStoriesChat(generationHistory, setGenerationHistory, prompt, response.text());
                     setActualModuleRes(response.text());
                     break;
                 } else {
-                    // attempts++;
-                    // await delay(1000);
                     throw new SyntaxError("Invalid JSON response.");
                 }
             } catch (error) {
@@ -121,8 +120,6 @@ const StudyPlatform = () => {
                     generateModule(response.text(), studyPlatform, setStudyPlatform);
                     break;
                 } else {
-                    // attempts++;
-                    // await delay(1000);
                     throw new SyntaxError("Invalid JSON response.");
                 }
             } catch (error) {
