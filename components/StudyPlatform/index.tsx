@@ -4,13 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppContext } from "@/contexts/appContext";
 import Sidebar from "../Sidebar";
 import { Navbar } from "../Navbar";
-import { addStoriesChat, generateModule, generateModules, pageTransition, pageVariants, resetContext } from "@/lib/utilFunctions";
+import { addStoriesChat, generateModule, generateModules, pageTransition, pageVariants, resetContext, validateJSON } from "@/lib/utilFunctions";
 import { Button } from "@nextui-org/button";
 import Typed from "typed.js";
 import { AnimatePresence, motion } from "framer-motion";
 import prompts from "@/lib/prompts";
 import interactionGemini from "@/lib/geminiClient";
-import { ModuleContentType } from "@/@types/appContext";
 import { BadgeFill } from "../Icons";
 
 const StudyPlatformLoading = () => {
@@ -75,6 +74,8 @@ const StudyPlatform = () => {
     const [actualModuleRes, setActualModuleRes] = useState<string>("");
     const [timeModule, setTimeModule] = useState<boolean>(false);
 
+    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
     const handleGetModules = useCallback(async () => {
         if (!studyMaterial) return;
 
@@ -83,12 +84,21 @@ const StudyPlatform = () => {
             try {
                 const prompt = prompts.generateModules(studyMaterial);
                 const response = await interactionGemini(prompt, personality);
-                addStoriesChat(generationHistory, setGenerationHistory, prompt, response.text());
-                setActualModuleRes(response.text());
-                break;
+                const responseText = response.text();
+
+                if (validateJSON(responseText)) {
+                    addStoriesChat(generationHistory, setGenerationHistory, prompt, response.text());
+                    setActualModuleRes(response.text());
+                    break;
+                } else {
+                    // attempts++;
+                    // await delay(1000);
+                    throw new SyntaxError("Invalid JSON response.");
+                }
             } catch (error) {
                 console.error(error);
                 attempts++;
+                await delay(1000);
             } finally {
                 setIntroduction({ ...introduction, isLoading: false });
                 setStudyPlatform({ ...studyPlatform, isGettingModels: true });
@@ -104,11 +114,21 @@ const StudyPlatform = () => {
             try {
                 const prompt = prompts.generateModule(studyPlatform.modulos[studyPlatform.actModule]);
                 const response = await interactionGemini(prompt, personality, generationHistory);
-                generateModule(response.text(), studyPlatform, setStudyPlatform);
-                break;
+                const responseText = response.text();
+                console.log(responseText);
+
+                if (validateJSON(responseText)) {
+                    generateModule(response.text(), studyPlatform, setStudyPlatform);
+                    break;
+                } else {
+                    // attempts++;
+                    // await delay(1000);
+                    throw new SyntaxError("Invalid JSON response.");
+                }
             } catch (error) {
                 console.error(error);
                 attempts++;
+                await delay(1000);
             } finally {
                 setStudyPlatform(prevState => ({
                     ...prevState,
@@ -173,7 +193,7 @@ const StudyPlatform = () => {
                     className="relative z-50"
                 >
                     <Sidebar />
-                
+
                     <div className="min-h-[100lvh] lg:pl-[288px]">
                         <Navbar />
 
@@ -217,7 +237,7 @@ const StudyPlatform = () => {
                                                 );
                                             }
                                         })}
-
+                                        {/* <div>{JSON.stringify(studyPlatform, null, 2)}</div> */}
                                     </div>
 
                                     <div className="flex items-center justify-between gap-3 w-full px-12 max-450:flex-col max-450:gap-y-6">

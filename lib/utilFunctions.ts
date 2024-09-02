@@ -27,6 +27,18 @@ export const pageTransition = (duration: number) => ({
     duration,
 });
 
+export const validateJSON = (text: string): boolean => {
+    try {
+        const jsonStart = text.indexOf('[');
+        const jsonEnd = text.lastIndexOf(']');
+        const cleanedString = text.slice(jsonStart, jsonEnd + 1).replace(/[\n\r\t\b\f]/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+        const parsed = JSON.parse(cleanedString);
+        return parsed && typeof parsed === 'object';
+    } catch (e) {
+        return false;
+    }
+};
+
 export const addHistoryChat = (
     history: ChatHistoryType[],
     setHistory: (history: ChatHistoryType[]) => void,

@@ -39,6 +39,10 @@
     animation: loader-inner 2s infinite ease;
 }
 
+.studyPlatform-content h1:has(~ h2) ~h2 {
+    margin-top: 20px;
+}
+
 .studyPlatform-content h1 {
     font-size: 32px;
     font-weight: 700;
