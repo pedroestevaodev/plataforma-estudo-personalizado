@@ -29,7 +29,7 @@
 		"eslint-config-next": "14.2.3",
 		"framer-motion": "^11.1.9",
 		"intl-messageformat": "^10.5.12",
-		"next": "14.2.10",
+		"next": "14.2.21",
 		"next-themes": "^0.2.1",
 		"postcss": "8.4.38",
 		"react": "18.2.0",
